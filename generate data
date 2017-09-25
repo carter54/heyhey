@@ -1,0 +1,62 @@
+import random
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from datetime import datetime
+
+#generate user, user number from 1 to 10000
+region = []
+month = []
+offer = []
+acc_num = []
+revenue = []
+population = {'Longgang':184*0.6,'Yantian':21*0.3,'Baoan':330*0.6,'Longhua':140*0.4,'Futian':116*0.65,'Luohu':86*0.35,'Nanshan':90*0.7}
+loc_proporation = [0.1,0.08,0.2,0.08,0.07,0.18,0.15,0.06,0.03,0.05]   #各套餐在每个区域的占比
+monthly_change1 = [0,0,-0.025,0,0,0.02,0.025,0,0,-0.01]   #第一年各套餐每个月变化趋势
+monthly_change2 = [0,0,-0.01,0,0,0.01,0.04,0,0,-0.01]   #第二年各套餐每个月变化趋势
+monthly_change3 = [0,0,-0.01,0,0.05,0.02,0.025,0,0,-0.01]   #第三年各套餐每个月变化趋势
+offer_fee = [68,78,68,38,98,88,98,78,38,158]
+for i in range(1,37):
+    for ii in range(1,11):
+        for iii in ['Longgang','Yantian','Baoan','Longhua','Futian','Luohu','Nanshan']:
+            if i<10:
+                month.append('2015/0'+str(i)+'/01')
+            elif i>=10 and i<13:
+                month.append('2015/'+str(i)+'/01')
+            elif i>=13 and i<22:
+                month.append('2016/0'+str(i-12)+'/01')  #month
+            elif i>=22 and i<25:
+                month.append('2016/'+str(i-12)+'/01')
+            elif i>=25 and i<34:
+                month.append('2017/0'+str(i-24)+'/01')
+            else:
+                month.append('2017/'+str(i-24)+'/01')
+            
+            offer.append('offer'+str(ii))         #offer
+            region.append(iii)                    #region
+            #各区域各套餐各月份使用人数
+            if i<13:
+                account_number = 10000*(population[iii]*(loc_proporation[ii-1]+random.uniform(0,0.03)))*(1+(i-1)*(monthly_change1[ii-1]+random.uniform(-0.01,0.01)))
+            elif i>=13 and i<25:
+                account_number = 10000*(population[iii]*(loc_proporation[ii-1]+random.uniform(0,0.03)))*(1+(i-1)*(monthly_change2[ii-1]+random.uniform(-0.01,0.01)))
+            else:
+                account_number = 10000*(population[iii]*(loc_proporation[ii-1]+random.uniform(0,0.03)))*(1+(i-1)*(monthly_change3[ii-1]+random.uniform(-0.01,0.01)))
+            
+            if account_number>0:
+                account_number = account_number
+            else:
+                account_number = random.uniform(500,2000)    
+            acc_num.append(account_number)
+            Revenue = account_number*(offer_fee[ii-1]+random.randint(-10,10))
+            revenue.append(Revenue)
+            
+                      
+dic_data = {'Month':month, 'Offer':offer,'Region':region,
+            'Account number':acc_num, 'Revenue':revenue}
+
+df = pd.DataFrame(dic_data)
+df['Account number'] = df['Account number'].astype('int')
+df['Revenue'] = df['Revenue'].astype('int')
+
+
+df.to_csv('generate_new_data.csv')
